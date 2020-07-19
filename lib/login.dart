@@ -18,7 +18,11 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              FlutterLogo(size: 150),
+              Icon(
+                Icons.local_dining,
+                size: 150,
+                color: Colors.blue,
+              ),
               SizedBox(height: 50),
               _signInButton(),
             ],
@@ -58,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
                 'Sign in with Google',
                 style: TextStyle(
                   fontSize: 20,
-                  color: Colors.grey,
+                  color: Colors.blue,
                 ),
               ),
             )
