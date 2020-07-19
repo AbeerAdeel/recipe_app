@@ -1,7 +1,9 @@
 import 'package:recipe_app/items.dart';
+import 'package:recipe_app/login.dart';
 import 'package:recipe_app/search.dart';
 import 'package:recipe_app/favourites.dart';
 import 'package:flutter/material.dart';
+import 'package:recipe_app/sign_in.dart';
 
 class NavBar extends StatefulWidget {
   @override
@@ -14,9 +16,13 @@ class _NavBarState extends State<NavBar> {
     ItemsPage(),
     SearchPage(),
     FavouritesPage(),
+    LoginPage(),
   ];
 
   void onTappedBar(int index) {
+    if (index == 3) {
+      signOutGoogle();
+    }
     setState(() {
       _currentIndex = index;
     });
@@ -28,6 +34,7 @@ class _NavBarState extends State<NavBar> {
       body: _children[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
+        type: BottomNavigationBarType.fixed,
         onTap: onTappedBar,
         items: [
           BottomNavigationBarItem(
@@ -41,6 +48,11 @@ class _NavBarState extends State<NavBar> {
           BottomNavigationBarItem(
             icon: Icon(Icons.star),
             title: Text('Favourites'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.exit_to_app),
+            backgroundColor: Colors.red,
+            title: Text('Logout'),
           ),
         ],
       ),

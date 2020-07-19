@@ -37,7 +37,8 @@ class _LoginPageState extends State<LoginPage> {
       splashColor: Colors.grey,
       onPressed: () {
         signInWithGoogle().whenComplete(() {
-          Navigator.of(context).push(
+          Navigator.pushReplacement(
+            context,
             MaterialPageRoute(
               builder: (context) {
                 return NavBar();
