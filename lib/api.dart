@@ -16,3 +16,13 @@ final String getTopRecipesQuery = """
       }
     }
 """;
+
+String createUser = """
+  mutation CreateUser(\$name: String!, \$email: String!) {
+    createUser(name: \$name, email: \$email) {
+      _id
+      name
+      email
+    }
+  }
+""";

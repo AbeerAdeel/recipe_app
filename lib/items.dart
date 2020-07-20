@@ -21,7 +21,6 @@ class _ItemsPageState extends State<ItemsPage> {
         ),
         builder: (QueryResult result,
             {VoidCallback refetch, FetchMore fetchMore}) {
-          print(result.data);
           return Scaffold(
             appBar: AppBar(
               title: Text("Items"),

@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:recipe_app/api.dart';
 import 'package:recipe_app/sign_in.dart';
 import 'package:recipe_app/navbar.dart';
 
@@ -33,43 +36,60 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _signInButton() {
-    return OutlineButton(
-      splashColor: Colors.grey,
-      onPressed: () {
-        signInWithGoogle().whenComplete(() {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return NavBar();
-              },
+    return Mutation(
+        options: MutationOptions(
+          documentNode: gql(createUser),
+          onCompleted: (dynamic resultData) {
+            print(resultData);
+          },
+        ),
+        builder: (
+          RunMutation runMutation,
+          QueryResult result,
+        ) {
+          return OutlineButton(
+            splashColor: Colors.grey,
+            onPressed: () {
+              signInWithGoogle().whenComplete(() async {
+                FirebaseUser user = await getCurrentUser();
+                runMutation({'name': user.displayName, 'email': user.email});
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return NavBar();
+                    },
+                  ),
+                );
+              });
+            },
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+            highlightElevation: 0,
+            borderSide: BorderSide(color: Colors.grey),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Image(
+                      image: AssetImage("assets/google_logo.png"),
+                      height: 35.0),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Text(
+                      'Sign in with Google',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           );
         });
-      },
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-      highlightElevation: 0,
-      borderSide: BorderSide(color: Colors.grey),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Image(image: AssetImage("assets/google_logo.png"), height: 35.0),
-            Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: Text(
-                'Sign in with Google',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.blue,
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
   }
 }

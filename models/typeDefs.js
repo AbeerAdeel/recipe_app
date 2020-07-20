@@ -22,4 +22,14 @@ export const typeDefs = gql`
     imageFile: String
     source: String
  },
+ type User {
+   _id: ID,
+   name: String
+   email: String
+   favourites: [ID]
+   currentItems: [String]
+ },
+ type Mutation {
+    createUser(name: String!, email: String!): User!
+  }
 `;
