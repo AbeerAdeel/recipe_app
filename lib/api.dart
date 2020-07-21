@@ -17,6 +17,17 @@ final String getTopRecipesQuery = """
     }
 """;
 
+final String getCurrentItemsQuery = """
+  query CurrentItems(\$name: String!, \$email: String!) {
+      getUserInfo(name: \$name, email: \$email) {
+        _id
+        name
+        email
+        currentItems
+      }
+    }
+""";
+
 String createUser = """
   mutation CreateUser(\$name: String!, \$email: String!) {
     createUser(name: \$name, email: \$email) {

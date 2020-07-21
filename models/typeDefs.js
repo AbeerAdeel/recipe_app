@@ -4,6 +4,7 @@ export const typeDefs = gql`
   type Query {
     getTopRecipes(currentIngredients: [String]!, limit: Int!, skip: Int!): [Recipe!]!
     getRecipe(id: ID!): [Recipe!]!
+    getUserInfo(name: String!, email: String!): [User]!
   }
  type Recipe {
     _id: ID!
@@ -31,5 +32,7 @@ export const typeDefs = gql`
  },
  type Mutation {
     createUser(name: String!, email: String!): User!
+    addItem(_id: ID!, item: String!): User!
+    removeItem(_id: ID!, item: String!): User!
   }
 `;

@@ -14,6 +14,9 @@ export const resolvers = {
         getRecipe: async (_, { id }) => {
             return await Recipe.find({ _id: id });
         },
+        getUserInfo: async (_, { name, email }) => {
+            return await User.find({name, email});
+        },
     },
     Mutation: {
         createUser: async (_, { name, email }) => {
@@ -26,6 +29,24 @@ export const resolvers = {
             console.log("Sucesfully created user");
             await user.save();
             return user
-        }
+        },
+        addItem: async (_, {_id, item }) => {
+            const user = await User.find({ _id });
+            if (!user) {
+                throw new Error("User doesn't exist");
+            }
+            await User.update({ _id }, { $push: { currentItems: item }});
+            const updatedUser = await User.find({ _id });
+            return updatedUser[0];
+        },
+        removeItem: async (_, { _id, item }) => {
+            const user = await User.find({ _id });
+            if (!user) {
+                throw new Error("User doesn't exist");
+            }
+            await User.update({ _id }, { $pull: { currentItems: item } });
+            const updatedUser = await User.find({ _id });
+            return updatedUser[0];
+        },
     }
 }
