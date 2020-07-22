@@ -30,13 +30,13 @@ export const resolvers = {
             await user.save();
             return user
         },
-        addItem: async (_, {_id, item }) => {
-            const user = await User.find({ _id });
+        addItem: async (_, {email, item }) => {
+            const user = await User.find({ email});
             if (!user) {
                 throw new Error("User doesn't exist");
             }
-            await User.update({ _id }, { $push: { currentItems: item }});
-            const updatedUser = await User.find({ _id });
+            await User.update({ email }, { $push: { currentItems: item }});
+            const updatedUser = await User.find({ email });
             return updatedUser[0];
         },
         removeItem: async (_, { _id, item }) => {

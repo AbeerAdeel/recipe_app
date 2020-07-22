@@ -32,7 +32,7 @@ export const typeDefs = gql`
  },
  type Mutation {
     createUser(name: String!, email: String!): User!
-    addItem(_id: ID!, item: String!): User!
+    addItem(email: String!, item: String!): User!
     removeItem(_id: ID!, item: String!): User!
   }
 `;

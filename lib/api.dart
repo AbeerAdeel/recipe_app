@@ -28,12 +28,34 @@ final String getCurrentItemsQuery = """
     }
 """;
 
-String createUser = """
+final String createUser = """
   mutation CreateUser(\$name: String!, \$email: String!) {
     createUser(name: \$name, email: \$email) {
       _id
       name
       email
+    }
+  }
+""";
+
+final String addItem = """
+  mutation AddItem(\$email: String!, \$item: String!) {
+    addItem(email: \$email, item: \$item) {
+      _id
+      name
+      email
+      currentItems
+    }
+  }
+""";
+
+final String removeItem = """
+  mutation RemoveItem(\$_id: ID!, \$item: String!) {
+    removeItem(_id: \$_id, item: \$item) {
+      _id
+      name
+      email
+      currentItems
     }
   }
 """;

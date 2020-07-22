@@ -42,9 +42,6 @@ class _ItemsPageState extends State<ItemsPage> {
                 ),
                 builder: (QueryResult result,
                     {VoidCallback refetch, FetchMore fetchMore}) {
-                  if (result.loading) {
-                    print('loading');
-                  }
                   return Scaffold(
                     appBar: AppBar(
                       title: Text("Items"),
@@ -52,7 +49,8 @@ class _ItemsPageState extends State<ItemsPage> {
                         IconButton(
                             icon: Icon(Icons.add),
                             tooltip: 'Add Item',
-                            onPressed: () => _displayDialog(context)),
+                            onPressed: () =>
+                                _displayDialog(context, snapshot.data.email)),
                       ],
                     ),
                     body: Center(
@@ -64,7 +62,7 @@ class _ItemsPageState extends State<ItemsPage> {
                                     key: _key,
                                     data: result.data['getUserInfo'][0]
                                         ['currentItems'],
-                                  )),
+                                    id: result.data['getUserInfo'][0]['_id'])),
                     floatingActionButton: FloatingActionButton(
                       onPressed: () {
                         Navigator.push(
@@ -82,31 +80,48 @@ class _ItemsPageState extends State<ItemsPage> {
         });
   }
 
-  _displayDialog(BuildContext context) {
+  _displayDialog(BuildContext context, String email) {
+    print(email);
     return showDialog(
         context: context,
         builder: (context) {
-          return AlertDialog(
-            title: Text('Add an Item'),
-            content: TextField(
-              controller: _textFieldController,
-            ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('CANCEL'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              FlatButton(
-                child: Text('ADD'),
-                onPressed: () {
-                  _key.currentState
-                      ._insertSingleItem(_textFieldController.text);
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
+          return Mutation(
+            options: MutationOptions(
+                documentNode: gql(addItem),
+                onCompleted: (dynamic resultData) {
+                  print(resultData);
+                }),
+            builder: (
+              RunMutation runMutation,
+              QueryResult result,
+            ) {
+              return AlertDialog(
+                title: Text('Add an Item'),
+                content: TextField(
+                  controller: _textFieldController,
+                ),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('CANCEL'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  FlatButton(
+                    child: Text('ADD'),
+                    onPressed: () {
+                      runMutation({
+                        'email': email,
+                        'item': _textFieldController.text,
+                      });
+                      _key.currentState
+                          ._insertSingleItem(_textFieldController.text);
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],
+              );
+            },
           );
         });
   }
@@ -114,7 +129,8 @@ class _ItemsPageState extends State<ItemsPage> {
 
 class RenderItems extends StatefulWidget {
   final List<dynamic> data;
-  const RenderItems({Key key, this.data}) : super(key: key);
+  final String id;
+  const RenderItems({Key key, this.data, this.id}) : super(key: key);
 
   @override
   _RenderItemsState createState() => _RenderItemsState();
@@ -133,23 +149,36 @@ class _RenderItemsState extends State<RenderItems> {
   }
 
   Widget _buildItem(String item, Animation animation, int index) {
-    return SizeTransition(
-      sizeFactor: animation,
-      child: Card(
-        child: ListTile(
-          title: Text(
-            item,
-            style: TextStyle(fontSize: 20),
+    return Mutation(
+      options: MutationOptions(
+          documentNode: gql(removeItem),
+          onCompleted: (dynamic resultData) {
+            print(resultData);
+          }),
+      builder: (
+        RunMutation runMutation,
+        QueryResult result,
+      ) {
+        return SizeTransition(
+          sizeFactor: animation,
+          child: Card(
+            child: ListTile(
+              title: Text(
+                item,
+                style: TextStyle(fontSize: 20),
+              ),
+              trailing: IconButton(
+                icon: Icon(Icons.delete),
+                color: Colors.red,
+                onPressed: () {
+                  runMutation({'_id': widget.id, 'item': item});
+                  _removeSingleItems(index);
+                },
+              ),
+            ),
           ),
-          trailing: IconButton(
-            icon: Icon(Icons.delete),
-            color: Colors.red,
-            onPressed: () {
-              _removeSingleItems(index);
-            },
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 
