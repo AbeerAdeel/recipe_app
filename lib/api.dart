@@ -9,10 +9,12 @@ ValueNotifier<GraphQLClient> client = ValueNotifier(
 );
 
 final String getTopRecipesQuery = """
-  query TopRecipes(\$currentIngredients: [String]!, \$skip: Int!, \$limit: Int!) {
-      getTopRecipes(currentIngredients: \$currentIngredients, skip: \$skip, limit: \$limit) {
+  query TopRecipes(\$email: String!, \$skip: Int!, \$limit: Int!) {
+      getTopRecipes(email: \$email, skip: \$skip, limit: \$limit) {
         _id
         name
+        description
+        imageFile
       }
     }
 """;

@@ -2,7 +2,7 @@ import { gql } from "apollo-server-express";
 
 export const typeDefs = gql`
   type Query {
-    getTopRecipes(currentIngredients: [String]!, limit: Int!, skip: Int!): [Recipe!]!
+    getTopRecipes(email: String!, limit: Int!, skip: Int!): [Recipe!]!
     getRecipe(id: ID!): [Recipe!]!
     getUserInfo(name: String!, email: String!): [User]!
   }

@@ -3,10 +3,15 @@ import { User } from './models/user';
 
 export const resolvers = {
     Query: {
-        getTopRecipes: async (_, { currentIngredients, skip, limit }) => {
+        getTopRecipes: async (_, { email, skip, limit }) => {
+            const user = await User.find({ email });
+            if (!user) {
+                throw new Error("Can't find user");
+            }
+            const currentItems = user[0].currentItems;
             return await Recipe.find({
                 $and: [
-                    { ingredients: { $in: currentIngredients } },
+                    { ingredients: { $in: currentItems } },
                     { imageFile: { $exists: true } }
                 ]
             }).limit(limit).skip(skip)

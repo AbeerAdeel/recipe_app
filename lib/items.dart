@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:recipe_app/api.dart';
 import 'package:recipe_app/sign_in.dart';
-import 'package:recipe_app/favourites.dart';
+import 'package:recipe_app/top_recipes.dart';
 
 class ItemsPage extends StatefulWidget {
   ItemsPage({Key key}) : super(key: key);
@@ -68,7 +68,9 @@ class _ItemsPageState extends State<ItemsPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => FavouritesPage()),
+                              builder: (context) => TopRecipes(
+                                    email: snapshot.data.email,
+                                  )),
                         );
                       },
                       child: Icon(Icons.local_dining),
