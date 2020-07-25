@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:recipe_app/api.dart';
-import 'package:loadmore/loadmore.dart';
+import 'package:recipe_app/recipe.dart';
 
 class TopRecipes extends StatefulWidget {
   final String email;
@@ -53,8 +53,6 @@ class _TopRecipesState extends State<TopRecipes> {
                   return const Text(
                       'Both data and errors are null, this is a known bug after refactoring, you might have forgotten to set Github token');
                 }
-
-                print(skip);
                 final repositories =
                     (result.data['getTopRecipes'] as List<dynamic>);
 
@@ -73,7 +71,6 @@ class _TopRecipesState extends State<TopRecipes> {
                 if (result.loading) {
                   skip = skip + 5;
                 }
-                // print(repositories);
                 return Expanded(
                   child: ListView(
                     children: <Widget>[
@@ -86,7 +83,7 @@ class _TopRecipesState extends State<TopRecipes> {
                             child: Column(
                               children: <Widget>[
                                 SizedBox(
-                                  height: 338.0,
+                                  height: 320.0,
                                   child: Card(
                                     // This ensures that the Card's children are clipped correctly.
                                     clipBehavior: Clip.antiAlias,
@@ -198,25 +195,22 @@ class RecipeContent extends StatelessWidget {
             ),
           ),
         ),
-
-        // share, explore buttons
         ButtonBar(
-          alignment: MainAxisAlignment.start,
+          alignment: MainAxisAlignment.end,
           children: <Widget>[
-            FlatButton(
-              child: Text('SHARE', semanticsLabel: 'Share ${name}'),
-              textColor: Colors.amber.shade500,
+            IconButton(
+              icon: Icon(Icons.arrow_forward),
+              color: Colors.blue,
               onPressed: () {
-                print('pressed');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Recipe(
+                            id: this.recipe['_id'],
+                          )),
+                );
               },
-            ),
-            FlatButton(
-              child: Text('EXPLORE', semanticsLabel: 'Explore ${name}'),
-              textColor: Colors.amber.shade500,
-              onPressed: () {
-                print('pressed');
-              },
-            ),
+            )
           ],
         ),
       ],

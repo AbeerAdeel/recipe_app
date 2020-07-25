@@ -61,3 +61,14 @@ final String removeItem = """
     }
   }
 """;
+
+final String getRecipe = """
+  query GetRecipe(\$id: ID!) {
+      getRecipe(id: \$id) {
+        _id
+        name
+        description
+        imageFile
+      }
+    }
+""";
