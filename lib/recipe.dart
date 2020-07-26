@@ -36,12 +36,12 @@ class _RecipeState extends State<Recipe> {
         ),
         body: TabBarView(
           children: [
-            RecipeHomePage(
+            HomeTab(
                 name: widget.name,
                 description: widget.description,
                 imageFile: widget.imageFile),
-            Icon(Icons.kitchen),
-            Icon(Icons.format_list_numbered),
+            IngredientsTab(id: widget.id),
+            StepsTab(id: widget.id),
             Icon(Icons.fitness_center),
             Icon(Icons.info),
           ],
@@ -51,23 +51,19 @@ class _RecipeState extends State<Recipe> {
   }
 }
 
-class RecipeHomePage extends StatefulWidget {
+class HomeTab extends StatefulWidget {
   final String name;
   final String description;
   final String imageFile;
-  const RecipeHomePage({Key key, this.name, this.description, this.imageFile})
+  const HomeTab({Key key, this.name, this.description, this.imageFile})
       : super(key: key);
   @override
-  _RecipeHomePageState createState() => _RecipeHomePageState();
+  _HomeTabState createState() => _HomeTabState();
 }
 
-class _RecipeHomePageState extends State<RecipeHomePage> {
+class _HomeTabState extends State<HomeTab> {
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final TextStyle titleStyle =
-        theme.textTheme.headline5.copyWith(color: Colors.white);
-    final TextStyle descriptionStyle = theme.textTheme.subtitle1;
     return ListView(
       // crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -81,19 +77,6 @@ class _RecipeHomePageState extends State<RecipeHomePage> {
                   image: AssetImage(widget.imageFile),
                   fit: BoxFit.cover,
                   child: Container(),
-                ),
-              ),
-              Positioned(
-                bottom: 92.0,
-                left: 16.0,
-                right: 16.0,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.center,
-                  child: Text(
-                    widget.name,
-                    style: titleStyle,
-                  ),
                 ),
               ),
             ],
@@ -114,13 +97,11 @@ class _RecipeHomePageState extends State<RecipeHomePage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Flexible(
-                    child: Text(
-                      widget.description,
-                      // overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          color: Colors.black.withOpacity(0.6), fontSize: 14),
-                    ),
+                  child: Text(
+                    widget.description,
+                    // overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: Colors.black.withOpacity(0.6), fontSize: 14),
                   ),
                 ),
               ],
@@ -141,13 +122,11 @@ class _RecipeHomePageState extends State<RecipeHomePage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Flexible(
-                    child: Text(
-                      "10 Minutes to Make",
-                      // overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          color: Colors.black.withOpacity(0.6), fontSize: 14),
-                    ),
+                  child: Text(
+                    "10 Minutes to Make",
+                    // overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: Colors.black.withOpacity(0.6), fontSize: 14),
                   ),
                 ),
               ],
@@ -159,33 +138,80 @@ class _RecipeHomePageState extends State<RecipeHomePage> {
   }
 }
 
-// return Query(
-//       options: QueryOptions(
-//           documentNode: gql(getRecipe), variables: {'id': widget.id}),
-//       builder: (result, {fetchMore, refetch}) {
-//         if (result.loading) {
-//           return CircularProgressIndicator();
-//         }
-//         Map recipe = result.data['getRecipe'][0];
-//         return DefaultTabController(
-//           length: myTabs.length,
-//           child: Scaffold(
-//             appBar: AppBar(
-//               bottom: TabBar(
-//                 tabs: myTabs,
-//               ),
-//               title: Text(recipe['name']),
-//             ),
-//             body: TabBarView(
-//               children: [
-//                 Icon(Icons.home),
-//                 Icon(Icons.kitchen),
-//                 Icon(Icons.format_list_numbered),
-//                 Icon(Icons.fitness_center),
-//                 Icon(Icons.info),
-//               ],
-//             ),
-//           ),
-//         );
-//       },
-//     );
+class IngredientsTab extends StatefulWidget {
+  final String id;
+  const IngredientsTab({Key key, this.id}) : super(key: key);
+  @override
+  _IngredientsTabState createState() => _IngredientsTabState();
+}
+
+class _IngredientsTabState extends State<IngredientsTab> {
+  @override
+  Widget build(BuildContext context) {
+    return Query(
+      options: QueryOptions(
+          documentNode: gql(getRecipeIngredients),
+          variables: {'id': widget.id}),
+      builder: (result, {fetchMore, refetch}) {
+        if (result.loading) {
+          return Container(
+            child: CircularProgressIndicator(),
+          );
+        }
+        Map recipe = result.data['getRecipe'][0];
+        return ListView(
+          children: [
+            for (var ingredient in recipe['ingredients'])
+              ListTile(
+                title: Text(ingredient
+                    .split(' ')
+                    .map((word) => word[0].toUpperCase() + word.substring(1))
+                    .join(' ')),
+                leading: Icon(Icons.arrow_forward),
+                // trailing: Text("0$count"),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class StepsTab extends StatefulWidget {
+  final String id;
+  const StepsTab({Key key, this.id}) : super(key: key);
+  @override
+  _StepsTabState createState() => _StepsTabState();
+}
+
+class _StepsTabState extends State<StepsTab> {
+  @override
+  Widget build(BuildContext context) {
+    return Query(
+      options: QueryOptions(
+          documentNode: gql(getRecipeSteps), variables: {'id': widget.id}),
+      builder: (result, {fetchMore, refetch}) {
+        if (result.loading) {
+          return Container(
+            child: CircularProgressIndicator(),
+          );
+        }
+        Map recipe = result.data['getRecipe'][0];
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(0.0, 10, 0.0, 0),
+          child: ListView(
+            children: [
+              for (var i = 0; i < recipe['steps'].length; i++)
+                ListTile(
+                  title: Text(
+                      "${recipe['steps'][i][0].toUpperCase() + recipe['steps'][i].substring(1)}"),
+                  leading: Text("${(i + 1).toString()}."),
+                  // trailing: Text("0$count"),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}

@@ -62,11 +62,20 @@ final String removeItem = """
   }
 """;
 
-final String getRecipe = """
+final String getRecipeIngredients = """
   query GetRecipe(\$id: ID!) {
       getRecipe(id: \$id) {
         _id
-        
+        ingredients
+      }
+    }
+""";
+
+final String getRecipeSteps = """
+  query GetRecipe(\$id: ID!) {
+      getRecipe(id: \$id) {
+        _id
+        steps
       }
     }
 """;
