@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:recipe_app/api.dart';
 import 'package:recipe_app/recipe.dart';
+import 'package:intl/intl.dart';
 
 class TopRecipes extends StatefulWidget {
   final String email;
@@ -126,6 +127,16 @@ class _TopRecipesState extends State<TopRecipes> {
 }
 
 class RecipeContent extends StatelessWidget {
+  getCleanedDescription(String description) {
+    List<String> sentences = description.split(".");
+    List<String> cleanedSentences = [];
+    for (var sentence in sentences) {
+      String cleanedSentence = toBeginningOfSentenceCase(sentence.trim());
+      cleanedSentences.add(cleanedSentence);
+    }
+    return cleanedSentences.join('.  ');
+  }
+
   const RecipeContent({Key key, @required this.recipe})
       : assert(recipe != null),
         super(key: key);
@@ -137,8 +148,10 @@ class RecipeContent extends StatelessWidget {
     final TextStyle titleStyle =
         theme.textTheme.headline5.copyWith(color: Colors.white);
     final TextStyle descriptionStyle = theme.textTheme.subtitle1;
-    final String name = this.recipe['name'];
-    final String description = this.recipe['description'];
+    String name = this.recipe['name'].replaceAll('Th', 'th');
+    name = name.replaceAll(" S ", "'s ");
+    final String description =
+        getCleanedDescription(this.recipe['description']);
     final String imageFile = 'assets/' + this.recipe['imageFile'];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,8 +202,6 @@ class RecipeContent extends StatelessWidget {
                     style: descriptionStyle.copyWith(color: Colors.black54),
                   ),
                 ),
-                // Text(destination.city),
-                // Text(destination.location),
               ],
             ),
           ),
@@ -206,8 +217,10 @@ class RecipeContent extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) => Recipe(
-                            id: this.recipe['_id'],
-                          )),
+                          id: this.recipe['_id'],
+                          name: name,
+                          description: description,
+                          imageFile: imageFile)),
                 );
               },
             )

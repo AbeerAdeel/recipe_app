@@ -8,7 +8,7 @@ export const typeDefs = gql`
   }
  type Recipe {
     _id: ID!
-    name: String!
+    name: String
     recipe_code: Int
     minutes: Int
     contributor_id: Int
