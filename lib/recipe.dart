@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:recipe_app/api.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Recipe extends StatefulWidget {
   final String id;
   final String name;
   final String description;
   final String imageFile;
-  const Recipe({Key key, this.id, this.name, this.description, this.imageFile})
+  final int minutes;
+  const Recipe(
+      {Key key,
+      this.id,
+      this.name,
+      this.description,
+      this.imageFile,
+      this.minutes})
       : super(key: key);
   @override
   _RecipeState createState() => _RecipeState();
@@ -39,11 +47,12 @@ class _RecipeState extends State<Recipe> {
             HomeTab(
                 name: widget.name,
                 description: widget.description,
-                imageFile: widget.imageFile),
+                imageFile: widget.imageFile,
+                minutes: widget.minutes),
             IngredientsTab(id: widget.id),
             StepsTab(id: widget.id),
-            Icon(Icons.fitness_center),
-            Icon(Icons.info),
+            NutritionTab(id: widget.id),
+            InfoTab(id: widget.id),
           ],
         ),
       ),
@@ -55,7 +64,9 @@ class HomeTab extends StatefulWidget {
   final String name;
   final String description;
   final String imageFile;
-  const HomeTab({Key key, this.name, this.description, this.imageFile})
+  final int minutes;
+  const HomeTab(
+      {Key key, this.name, this.description, this.imageFile, this.minutes})
       : super(key: key);
   @override
   _HomeTabState createState() => _HomeTabState();
@@ -99,7 +110,6 @@ class _HomeTabState extends State<HomeTab> {
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
                     widget.description,
-                    // overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                         color: Colors.black.withOpacity(0.6), fontSize: 14),
                   ),
@@ -123,8 +133,7 @@ class _HomeTabState extends State<HomeTab> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    "10 Minutes to Make",
-                    // overflow: TextOverflow.ellipsis,
+                    "${widget.minutes.toString()} Minutes to Make",
                     style: TextStyle(
                         color: Colors.black.withOpacity(0.6), fontSize: 14),
                   ),
@@ -154,7 +163,7 @@ class _IngredientsTabState extends State<IngredientsTab> {
           variables: {'id': widget.id}),
       builder: (result, {fetchMore, refetch}) {
         if (result.loading) {
-          return Container(
+          return Center(
             child: CircularProgressIndicator(),
           );
         }
@@ -192,7 +201,7 @@ class _StepsTabState extends State<StepsTab> {
           documentNode: gql(getRecipeSteps), variables: {'id': widget.id}),
       builder: (result, {fetchMore, refetch}) {
         if (result.loading) {
-          return Container(
+          return Center(
             child: CircularProgressIndicator(),
           );
         }
@@ -210,6 +219,216 @@ class _StepsTabState extends State<StepsTab> {
                 ),
             ],
           ),
+        );
+      },
+    );
+  }
+}
+
+class NutritionTab extends StatefulWidget {
+  final String id;
+  const NutritionTab({Key key, this.id}) : super(key: key);
+  @override
+  _NutritionTabState createState() => _NutritionTabState();
+}
+
+class _NutritionTabState extends State<NutritionTab> {
+  @override
+  Widget build(BuildContext context) {
+    return Query(
+      options: QueryOptions(
+          documentNode: gql(getRecipeNutrition), variables: {'id': widget.id}),
+      builder: (result, {fetchMore, refetch}) {
+        if (result.loading) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        Map recipe = result.data['getRecipe'][0];
+        return PaginatedDataTable(
+          header: Text("Nutrition Facts"),
+          rowsPerPage: 6,
+          columns: [
+            DataColumn(label: Text('')),
+            DataColumn(label: Text('')),
+          ],
+          source: _DataSource(context, recipe['nutrition']),
+        );
+      },
+    );
+  }
+}
+
+class _Row {
+  _Row(
+    this.category,
+    this.value,
+  );
+  final String category;
+  final dynamic value;
+}
+
+class _DataSource extends DataTableSource {
+  _DataSource(this.context, this.nutrition) {
+    _rows = <_Row>[
+      _Row('Calories (g)', this.nutrition[0]),
+      _Row('Total Fat (PDV)', this.nutrition[1]),
+      _Row('Sugar (PDV)', this.nutrition[2]),
+      _Row('Sodium (PDV)', this.nutrition[3]),
+      _Row('Protein (PDV)', this.nutrition[4]),
+      _Row('Saturated Fat (PDV)', this.nutrition[5]),
+    ];
+  }
+  final BuildContext context;
+  List<_Row> _rows;
+  List<dynamic> nutrition;
+
+  int _selectedCount = 0;
+  @override
+  DataRow getRow(int index) {
+    assert(index >= 0);
+    if (index >= _rows.length) return null;
+    final row = _rows[index];
+    return DataRow.byIndex(
+      index: index,
+      cells: [
+        DataCell(Text(row.category)),
+        DataCell(Text(row.value.toString())),
+      ],
+    );
+  }
+
+  @override
+  int get rowCount => _rows.length;
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get selectedRowCount => _selectedCount;
+}
+
+class InfoTab extends StatefulWidget {
+  final String id;
+  const InfoTab({Key key, this.id}) : super(key: key);
+  @override
+  _InfoTabState createState() => _InfoTabState();
+}
+
+class _InfoTabState extends State<InfoTab> {
+  @override
+  Widget build(BuildContext context) {
+    return Query(
+      options: QueryOptions(
+          documentNode: gql(getRecipeInfo), variables: {'id': widget.id}),
+      builder: (result, {fetchMore, refetch}) {
+        if (result.loading) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        Map recipe = result.data['getRecipe'][0];
+        return ListView(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0.0, 16, 0.0, 0),
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: const Text(
+                        'Source',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: InkWell(
+                        child: Text(
+                          recipe['source'],
+                          style: TextStyle(color: Colors.blue, fontSize: 14),
+                        ),
+                        onTap: () => launch(recipe['source']),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0.0, 16, 0.0, 0),
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: const Text(
+                        'Recipe Code',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        recipe['recipe_code'].toString(),
+                        style: TextStyle(
+                            color: Colors.black.withOpacity(0.6), fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0.0, 16, 0.0, 0),
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: const Text(
+                        'Contributor ID',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        recipe['contributor_id'].toString(),
+                        style: TextStyle(
+                            color: Colors.black.withOpacity(0.6), fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0.0, 16, 0.0, 0),
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: const Text(
+                        'Date Submitted',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        recipe['submitted'].toString(),
+                        style: TextStyle(
+                            color: Colors.black.withOpacity(0.6), fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         );
       },
     );

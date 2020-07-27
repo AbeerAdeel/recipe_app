@@ -83,7 +83,6 @@ class _ItemsPageState extends State<ItemsPage> {
   }
 
   _displayDialog(BuildContext context, String email) {
-    print(email);
     return showDialog(
         context: context,
         builder: (context) {

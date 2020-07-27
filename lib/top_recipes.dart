@@ -153,6 +153,7 @@ class RecipeContent extends StatelessWidget {
     final String description =
         getCleanedDescription(this.recipe['description']);
     final String imageFile = 'assets/' + this.recipe['imageFile'];
+    print(this.recipe['minutes']);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -220,7 +221,8 @@ class RecipeContent extends StatelessWidget {
                           id: this.recipe['_id'],
                           name: name,
                           description: description,
-                          imageFile: imageFile)),
+                          imageFile: imageFile,
+                          minutes: this.recipe['minutes'])),
                 );
               },
             )

@@ -22,6 +22,7 @@ export const typeDefs = gql`
     n_ingredients: Int
     imageFile: String
     source: String
+    order: Int
  },
  type User {
    _id: ID,

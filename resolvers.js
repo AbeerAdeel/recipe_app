@@ -9,12 +9,28 @@ export const resolvers = {
                 throw new Error("Can't find user");
             }
             const currentItems = user[0].currentItems;
-            return await Recipe.find({
-                $and: [
-                    { ingredients: { $in: currentItems } },
-                    { imageFile: { $exists: true } }
-                ]
-            }).limit(limit).skip(skip)
+            return await Recipe.aggregate([
+                { $match: { ingredients: { $in: currentItems } } },
+                { $match: { imageFile: { $exists: true } } },
+                {
+                    $project: {
+                        _id: 1,
+                        name: 1,
+                        description: 1,
+                        imageFile: 1,
+                        minutes: 1,
+                        order: {
+                            $size: {
+                                $setIntersection: [currentItems, "$ingredients"]
+                            }
+                        }
+                    }
+                },
+                // { $unwind: "$order" },
+                { $sort: { order: -1, description: -1} },
+                { $skip: skip },
+                { $limit: limit },
+            ]);
         },
         getRecipe: async (_, { id }) => {
             return await Recipe.find({ _id: id });

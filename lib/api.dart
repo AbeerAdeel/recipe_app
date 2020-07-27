@@ -15,6 +15,7 @@ final String getTopRecipesQuery = """
         name
         description
         imageFile
+        minutes
       }
     }
 """;
@@ -76,6 +77,27 @@ final String getRecipeSteps = """
       getRecipe(id: \$id) {
         _id
         steps
+      }
+    }
+""";
+
+final String getRecipeNutrition = """
+  query GetRecipe(\$id: ID!) {
+      getRecipe(id: \$id) {
+        _id
+        nutrition
+      }
+    }
+""";
+
+final String getRecipeInfo = """
+  query GetRecipe(\$id: ID!) {
+      getRecipe(id: \$id) {
+        _id
+        source
+        recipe_code
+        contributor_id
+        submitted
       }
     }
 """;
