@@ -20,13 +20,14 @@ final String getTopRecipesQuery = """
     }
 """;
 
-final String getCurrentItemsQuery = """
+final String getCurrentUserInfo = """
   query CurrentItems(\$name: String!, \$email: String!) {
       getUserInfo(name: \$name, email: \$email) {
         _id
         name
         email
         currentItems
+        favourites
       }
     }
 """;
@@ -59,6 +60,28 @@ final String removeItem = """
       name
       email
       currentItems
+    }
+  }
+""";
+
+final String addFavourite = """
+  mutation AddFavourite(\$email: String!, \$recipeId: ID!) {
+    addFavourite(email: \$email, recipeId: \$recipeId) {
+      _id
+      name
+      email
+      favourites
+    }
+  }
+""";
+
+final String removeFavourite = """
+  mutation RemoveFavourite(\$email: String!, \$recipeId: ID!) {
+    removeFavourite(email: \$email, recipeId: \$recipeId) {
+      _id
+      name
+      email
+      favourites
     }
   }
 """;

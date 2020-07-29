@@ -26,8 +26,7 @@ export const resolvers = {
                         }
                     }
                 },
-                // { $unwind: "$order" },
-                { $sort: { order: -1, description: -1} },
+                { $sort: { order: -1, description: -1 } },
                 { $skip: skip },
                 { $limit: limit },
             ]);
@@ -36,7 +35,7 @@ export const resolvers = {
             return await Recipe.find({ _id: id });
         },
         getUserInfo: async (_, { name, email }) => {
-            return await User.find({name, email});
+            return await User.find({ name, email });
         },
     },
     Mutation: {
@@ -51,12 +50,12 @@ export const resolvers = {
             await user.save();
             return user
         },
-        addItem: async (_, {email, item }) => {
-            const user = await User.find({ email});
+        addItem: async (_, { email, item }) => {
+            const user = await User.find({ email });
             if (!user) {
                 throw new Error("User doesn't exist");
             }
-            await User.update({ email }, { $push: { currentItems: item }});
+            await User.update({ email }, { $push: { currentItems: item } });
             const updatedUser = await User.find({ email });
             return updatedUser[0];
         },
@@ -67,6 +66,32 @@ export const resolvers = {
             }
             await User.update({ _id }, { $pull: { currentItems: item } });
             const updatedUser = await User.find({ _id });
+            return updatedUser[0];
+        },
+        addFavourite: async (_, { email, recipeId }) => {
+            const recipe = await Recipe.find({ _id: recipeId });
+            if (!recipe) {
+                throw new Error("Recipe doesn't exist");
+            }
+            const user = await User.find({email});
+            if (!user) {
+                throw new Error("User doesn't exist");
+            }
+            await User.update({ email }, { $push: { favourites: recipeId } });
+            const updatedUser = await User.find({ email});
+            return updatedUser[0];
+        },
+        removeFavourite: async (_, { email, recipeId }) => {
+            const recipe = await Recipe.find({ _id: recipeId });
+            if (!recipe) {
+                throw new Error("Recipe doesn't exist");
+            }
+            const user = await User.find({ email});
+            if (!user) {
+                throw new Error("User doesn't exist");
+            }
+            await User.update({ email}, { $pull: { favourites: recipeId } });
+            const updatedUser = await User.find({ email});
             return updatedUser[0];
         },
     }

@@ -34,7 +34,7 @@ class _ItemsPageState extends State<ItemsPage> {
           if (snapshot.hasData) {
             return Query(
                 options: QueryOptions(
-                  documentNode: gql(getCurrentItemsQuery),
+                  documentNode: gql(getCurrentUserInfo),
                   variables: {
                     'name': snapshot.data.displayName,
                     'email': snapshot.data.email
@@ -69,8 +69,9 @@ class _ItemsPageState extends State<ItemsPage> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => TopRecipes(
-                                    email: snapshot.data.email,
-                                  )),
+                                  email: snapshot.data.email,
+                                  favourites: result.data['getUserInfo'][0]
+                                      ['favourites'])),
                         );
                       },
                       child: Icon(Icons.local_dining),

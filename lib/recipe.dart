@@ -41,6 +41,14 @@ class _RecipeState extends State<Recipe> {
             isScrollable: true,
           ),
           title: Text(widget.name),
+          actions: <Widget>[
+            IconButton(
+                icon: Icon(Icons.favorite),
+                tooltip: 'Add Item',
+                onPressed: () {
+                  print('hello');
+                }),
+          ],
         ),
         body: TabBarView(
           children: [
