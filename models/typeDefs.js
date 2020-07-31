@@ -5,6 +5,7 @@ export const typeDefs = gql`
     getTopRecipes(email: String!, limit: Int!, skip: Int!): [Recipe!]!
     getRecipe(id: ID!): [Recipe!]!
     getUserInfo(name: String!, email: String!): [User]!
+    getFavouriteRecipes(email: String!, limit: Int!, skip: Int!): [User]!
   }
  type Recipe {
     _id: ID!
@@ -30,6 +31,7 @@ export const typeDefs = gql`
    email: String
    favourites: [ID]
    currentItems: [String]
+   favouriteRecipes: [Recipe]
  },
  type Mutation {
     createUser(name: String!, email: String!): User!

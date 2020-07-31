@@ -1,5 +1,6 @@
 import { Recipe } from './models/recipe';
 import { User } from './models/user';
+import mongoose from "mongoose";
 
 export const resolvers = {
     Query: {
@@ -37,6 +38,43 @@ export const resolvers = {
         getUserInfo: async (_, { name, email }) => {
             return await User.find({ name, email });
         },
+        getFavouriteRecipes: async (_, { email, limit, skip }) => {
+            const user = await User.find({ email });
+            if (!user) {
+                throw new Error("User doesn't exist");
+            }
+            const favouriteQuery = [
+                {
+                    $match: {
+                        email: email,
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "recipes",
+                        let: { favourite_ids: "$favourites"},
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {$in: ["$_id", "$$favourite_ids"]}
+                                }
+                            },
+                            { $skip: skip},
+                            { $limit: limit },
+                            
+                        ],
+                        as: "favouriteRecipes",
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        favouriteRecipes: 1,
+                    }
+                },
+            ];
+            return await User.aggregate(favouriteQuery);
+        },
     },
     Mutation: {
         createUser: async (_, { name, email }) => {
@@ -73,12 +111,12 @@ export const resolvers = {
             if (!recipe) {
                 throw new Error("Recipe doesn't exist");
             }
-            const user = await User.find({email});
+            const user = await User.find({ email });
             if (!user) {
                 throw new Error("User doesn't exist");
             }
-            await User.update({ email }, { $push: { favourites: recipeId } });
-            const updatedUser = await User.find({ email});
+            await User.update({ email }, { $push: { favourites: mongoose.Types.ObjectId(recipeId) } });
+            const updatedUser = await User.find({ email });
             return updatedUser[0];
         },
         removeFavourite: async (_, { email, recipeId }) => {
@@ -86,12 +124,12 @@ export const resolvers = {
             if (!recipe) {
                 throw new Error("Recipe doesn't exist");
             }
-            const user = await User.find({ email});
+            const user = await User.find({ email });
             if (!user) {
                 throw new Error("User doesn't exist");
             }
-            await User.update({ email}, { $pull: { favourites: recipeId } });
-            const updatedUser = await User.find({ email});
+            await User.update({ email }, { $pull: { favourites: mongoose.Types.ObjectId(recipeId) } });
+            const updatedUser = await User.find({ email });
             return updatedUser[0];
         },
     }

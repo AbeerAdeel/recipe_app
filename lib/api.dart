@@ -20,6 +20,21 @@ final String getTopRecipesQuery = """
     }
 """;
 
+final String getFavouriteRecipes = """
+  query FavouriteRecipes(\$email: String!, \$skip: Int!, \$limit: Int!) {
+      getFavouriteRecipes(email: \$email, skip: \$skip, limit: \$limit) {
+        _id
+        favouriteRecipes {
+          _id
+          name
+          description
+          imageFile
+          minutes
+        }
+      }
+    }
+""";
+
 final String getCurrentUserInfo = """
   query CurrentItems(\$name: String!, \$email: String!) {
       getUserInfo(name: \$name, email: \$email) {
