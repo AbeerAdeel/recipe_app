@@ -89,10 +89,8 @@ class _ItemsPageState extends State<ItemsPage> {
         builder: (context) {
           return Mutation(
             options: MutationOptions(
-                documentNode: gql(addItem),
-                onCompleted: (dynamic resultData) {
-                  print(resultData);
-                }),
+              documentNode: gql(addItem),
+            ),
             builder: (
               RunMutation runMutation,
               QueryResult result,
@@ -153,10 +151,8 @@ class _RenderItemsState extends State<RenderItems> {
   Widget _buildItem(String item, Animation animation, int index) {
     return Mutation(
       options: MutationOptions(
-          documentNode: gql(removeItem),
-          onCompleted: (dynamic resultData) {
-            print(resultData);
-          }),
+        documentNode: gql(removeItem),
+      ),
       builder: (
         RunMutation runMutation,
         QueryResult result,

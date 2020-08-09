@@ -20,10 +20,12 @@ class MyApp extends StatelessWidget {
       child: FutureBuilder<bool>(
         future: _calculation,
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-          Widget children = LoginPage();
+          Widget children = Container();
           if (snapshot.hasData) {
             if (snapshot.data == true) {
               children = NavBar();
+            } else {
+              children = LoginPage();
             }
           }
           return MaterialApp(title: 'Recipes', home: children);

@@ -56,9 +56,12 @@ class _FavouritesPageState extends State<FavouritesPage> {
                           child: CircularProgressIndicator(),
                         );
                       }
-                      print(result.data);
+
                       final repositories = (result.data['getFavouriteRecipes']
                           [0]['favouriteRecipes'] as List<dynamic>);
+
+                      final List<dynamic> favourites =
+                          result.data['getFavouriteRecipes'][0]['favourites'];
 
                       final opts = FetchMoreOptions(
                         variables: {'skip': skip},
@@ -78,10 +81,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                       if (result.loading) {
                         skip = skip + 5;
                       }
-                      List<dynamic> favourites = List();
-                      for (var recipe in repositories) {
-                        favourites.add(recipe["_id"]);
-                      }
+
                       return Expanded(
                         child: ListView(
                           children: <Widget>[

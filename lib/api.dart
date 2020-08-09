@@ -24,6 +24,7 @@ final String getFavouriteRecipes = """
   query FavouriteRecipes(\$email: String!, \$skip: Int!, \$limit: Int!) {
       getFavouriteRecipes(email: \$email, skip: \$skip, limit: \$limit) {
         _id
+        favourites
         favouriteRecipes {
           _id
           name

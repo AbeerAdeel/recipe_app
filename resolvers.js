@@ -69,6 +69,7 @@ export const resolvers = {
                 {
                     $project: {
                         _id: 1,
+                        favourites: 1,
                         favouriteRecipes: 1,
                     }
                 },

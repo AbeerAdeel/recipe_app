@@ -39,9 +39,6 @@ class _LoginPageState extends State<LoginPage> {
     return Mutation(
         options: MutationOptions(
           documentNode: gql(createUser),
-          onCompleted: (dynamic resultData) {
-            print(resultData);
-          },
         ),
         builder: (
           RunMutation runMutation,

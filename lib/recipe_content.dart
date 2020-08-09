@@ -46,10 +46,8 @@ class _RecipeContentState extends State<RecipeContent> {
     final String imageFile = 'assets/' + widget.recipe['imageFile'];
     return Mutation(
       options: MutationOptions(
-          documentNode: alreadyLiked ? gql(removeFavourite) : gql(addFavourite),
-          onCompleted: (dynamic resultData) {
-            print(resultData);
-          }),
+        documentNode: alreadyLiked ? gql(removeFavourite) : gql(addFavourite),
+      ),
       builder: (RunMutation runMutation, QueryResult result) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,6 +113,7 @@ class _RecipeContentState extends State<RecipeContent> {
                   onPressed: () {
                     setState(() {
                       if (alreadyLiked) {
+                        print('hello');
                         _liked.remove(widget.recipe["_id"]);
                         final snackBar = SnackBar(
                           content: Text(
