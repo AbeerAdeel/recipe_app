@@ -6,18 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:recipe_app/sign_in.dart';
 
 class NavBar extends StatefulWidget {
+  const NavBar({Key key, @required this.email, @required this.name})
+      : assert(name != null),
+        super(key: key);
+  final String email;
+  final String name;
   @override
   _NavBarState createState() => _NavBarState();
 }
 
 class _NavBarState extends State<NavBar> {
   int _currentIndex = 0;
-  final List<Widget> _children = [
-    ItemsPage(),
-    SearchPage(),
-    FavouritesPage(),
-    LoginPage(),
-  ];
 
   void onTappedBar(int index) {
     if (index == 3) {
@@ -30,6 +29,12 @@ class _NavBarState extends State<NavBar> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> _children = [
+      ItemsPage(email: widget.email, name: widget.name),
+      SearchPage(),
+      FavouritesPage(email: widget.email),
+      LoginPage(),
+    ];
     return Scaffold(
       body: _children[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(

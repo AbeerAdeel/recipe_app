@@ -6,7 +6,9 @@ import 'package:recipe_app/sign_in.dart';
 import 'package:recipe_app/top_recipes.dart';
 
 class ItemsPage extends StatefulWidget {
-  ItemsPage({Key key}) : super(key: key);
+  ItemsPage({Key key, this.email, this.name}) : super(key: key);
+  final String email;
+  final String name;
   @override
   _ItemsPageState createState() => _ItemsPageState();
 }
@@ -14,10 +16,10 @@ class ItemsPage extends StatefulWidget {
 class _ItemsPageState extends State<ItemsPage> {
   final _textFieldController = TextEditingController();
   final GlobalKey<_RenderItemsState> _key = GlobalKey();
-  Future<FirebaseUser> _calculation = Future<FirebaseUser>.delayed(
-    Duration(seconds: 1),
-    () => getCurrentUser(),
-  );
+  // Future<FirebaseUser> _calculation = Future<FirebaseUser>.delayed(
+  //   Duration(seconds: 1),
+  //   () => getCurrentUser(),
+  // );
 
   void dispose() {
     // Clean up the controller when the widget is removed from the
@@ -28,59 +30,49 @@ class _ItemsPageState extends State<ItemsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<FirebaseUser>(
-        future: _calculation,
-        builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {
-          if (snapshot.hasData) {
-            return Query(
-                options: QueryOptions(
-                  documentNode: gql(getCurrentUserInfo),
-                  variables: {
-                    'name': snapshot.data.displayName,
-                    'email': snapshot.data.email
-                  },
-                ),
-                builder: (QueryResult result,
-                    {VoidCallback refetch, FetchMore fetchMore}) {
-                  return Scaffold(
-                    appBar: AppBar(
-                      title: Text("Items"),
-                      actions: <Widget>[
-                        IconButton(
-                            icon: Icon(Icons.add),
-                            tooltip: 'Add Item',
-                            onPressed: () =>
-                                _displayDialog(context, snapshot.data.email)),
-                      ],
-                    ),
-                    body: Center(
-                        child: result.hasException
-                            ? Text(result.exception.toString())
-                            : result.loading
-                                ? CircularProgressIndicator()
-                                : RenderItems(
-                                    key: _key,
-                                    data: result.data['getUserInfo'][0]
-                                        ['currentItems'],
-                                    id: result.data['getUserInfo'][0]['_id'])),
-                    floatingActionButton: FloatingActionButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => TopRecipes(
-                                  email: snapshot.data.email,
-                                  favourites: result.data['getUserInfo'][0]
-                                      ['favourites'])),
-                        );
-                      },
-                      child: Icon(Icons.local_dining),
-                    ),
-                  );
-                });
-          }
-          return Container();
-        });
+    print(widget.email);
+    return Query(
+      options: QueryOptions(
+        documentNode: gql(getCurrentUserInfo),
+        variables: {'name': widget.name, 'email': widget.email},
+      ),
+      builder: (QueryResult result,
+          {VoidCallback refetch, FetchMore fetchMore}) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text("Items"),
+            actions: <Widget>[
+              IconButton(
+                  icon: Icon(Icons.add),
+                  tooltip: 'Add Item',
+                  onPressed: () => _displayDialog(context, widget.email)),
+            ],
+          ),
+          body: Center(
+              child: result.hasException
+                  ? Text(result.exception.toString())
+                  : result.loading
+                      ? CircularProgressIndicator()
+                      : RenderItems(
+                          key: _key,
+                          data: result.data['getUserInfo'][0]['currentItems'],
+                          id: result.data['getUserInfo'][0]['_id'])),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => TopRecipes(
+                        email: widget.email,
+                        favourites: result.data['getUserInfo'][0]
+                            ['favourites'])),
+              );
+            },
+            child: Icon(Icons.local_dining),
+          ),
+        );
+      },
+    );
   }
 
   _displayDialog(BuildContext context, String email) {
