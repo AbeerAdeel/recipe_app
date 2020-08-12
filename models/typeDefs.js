@@ -6,6 +6,7 @@ export const typeDefs = gql`
     getRecipe(id: ID!): [Recipe!]!
     getUserInfo(name: String!, email: String!): [User]!
     getFavouriteRecipes(email: String!, limit: Int!, skip: Int!): [User]!
+    getSearchedRecipes(search: String!, limit: Int!, skip: Int!): Results!
   }
  type Recipe {
     _id: ID!
@@ -39,5 +40,9 @@ export const typeDefs = gql`
     removeItem(_id: ID!, item: String!): User!
     addFavourite(email: String!, recipeId: ID!): User!
     removeFavourite(email: String!, recipeId: ID!): User!
+  }
+  type Results {
+    recipes: [Recipe]
+    count: Int
   }
 `;

@@ -1,13 +1,3 @@
-import 'package:flutter/foundation.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
-
-ValueNotifier<GraphQLClient> client = ValueNotifier(
-  GraphQLClient(
-    cache: InMemoryCache(),
-    link: HttpLink(uri: 'http://192.168.2.133:5000/graphql'),
-  ),
-);
-
 final String getTopRecipesQuery = """
   query TopRecipes(\$email: String!, \$skip: Int!, \$limit: Int!) {
       getTopRecipes(email: \$email, skip: \$skip, limit: \$limit) {
@@ -137,6 +127,20 @@ final String getRecipeInfo = """
         recipe_code
         contributor_id
         submitted
+      }
+    }
+""";
+
+final String getSearchedRecipes = """
+  query GetSearchedRecipes(\$search: String!, \$limit: Int!, \$skip: Int!) {
+      getSearchedRecipes(search: \$search, limit: \$limit, skip: \$skip) {
+        recipes {
+          _id
+          name
+          description
+          imageFile
+        }
+        count
       }
     }
 """;

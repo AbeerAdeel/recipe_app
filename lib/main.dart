@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:recipe_app/api.dart';
+import 'package:recipe_app/graphqlConf.dart';
 import 'package:recipe_app/navbar.dart';
 import 'package:recipe_app/login.dart';
 import 'package:recipe_app/sign_in.dart';
@@ -8,6 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 final GoogleSignIn _googleSignIn = GoogleSignIn();
+GraphQLConfiguration graphQLConfiguration = GraphQLConfiguration();
 
 void main() => runApp(MyApp());
 
@@ -32,7 +34,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp(title: 'Recipes', home: children);
         },
       ),
-      client: client,
+      client: graphQLConfiguration.client,
     );
   }
 }
