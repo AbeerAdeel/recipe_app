@@ -42,7 +42,6 @@ export const resolvers = {
             const recipes = await Recipe.find({ name: { $regex: search, $options: "i" } }).limit(limit).skip(skip);
             const user = await User.find({ email });
             const favourites = user[0]['favourites'];
-            console.log(favourites);
             return { recipes, favourites };
         },
         getFavouriteRecipes: async (_, { email, limit, skip }) => {

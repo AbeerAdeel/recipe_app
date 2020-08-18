@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:recipe_app/api.dart';
+import 'package:recipe_app/image_item.dart';
 
 class RecipeContent extends StatefulWidget {
   const RecipeContent({Key key, this.recipe, this.favourites, this.email})
@@ -40,8 +41,8 @@ class _RecipeContentState extends State<RecipeContent> {
     final String description =
         getCleanedDescription(widget.recipe['description']);
     final String imageFile = widget.recipe['imageFile'] != null
-        ? 'assets/' + widget.recipe['imageFile']
-        : 'assets/placeholder.png';
+        ? widget.recipe['imageFile']
+        : 'placeholder.png';
 
     return Mutation(
       options: MutationOptions(
@@ -57,10 +58,8 @@ class _RecipeContentState extends State<RecipeContent> {
               child: Stack(
                 children: <Widget>[
                   Positioned.fill(
-                    child: Ink.image(
-                      image: AssetImage(imageFile),
-                      fit: BoxFit.cover,
-                      child: Container(),
+                    child: ImageItem(
+                      imageFile: imageFile,
                     ),
                   ),
                   Positioned(
