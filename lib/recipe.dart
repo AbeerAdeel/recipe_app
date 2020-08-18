@@ -9,13 +9,17 @@ class Recipe extends StatefulWidget {
   final String description;
   final String imageFile;
   final int minutes;
+  final List<dynamic> favourites;
+  final String email;
   const Recipe(
       {Key key,
       this.id,
       this.name,
       this.description,
       this.imageFile,
-      this.minutes})
+      this.minutes,
+      this.favourites,
+      this.email})
       : super(key: key);
   @override
   _RecipeState createState() => _RecipeState();
@@ -32,6 +36,8 @@ class _RecipeState extends State<Recipe> {
 
   @override
   Widget build(BuildContext context) {
+    final List<dynamic> _liked = widget.favourites;
+    final alreadyLiked = _liked.contains(widget.id);
     return DefaultTabController(
       length: myTabs.length,
       child: Scaffold(
@@ -42,12 +48,35 @@ class _RecipeState extends State<Recipe> {
           ),
           title: Text(widget.name),
           actions: <Widget>[
-            IconButton(
-                icon: Icon(Icons.favorite),
-                tooltip: 'Add Item',
-                onPressed: () {
-                  print('hello');
-                }),
+            Mutation(
+              options: MutationOptions(
+                documentNode:
+                    alreadyLiked ? gql(removeFavourite) : gql(addFavourite),
+              ),
+              builder: (runMutation, result) {
+                return IconButton(
+                  icon: alreadyLiked
+                      ? Icon(Icons.favorite)
+                      : Icon(Icons.favorite_border),
+                  tooltip: 'Add Item',
+                  onPressed: () {
+                    setState(
+                      () {
+                        if (alreadyLiked) {
+                          _liked.remove(widget.id);
+                          runMutation(
+                              {'email': widget.email, 'recipeId': widget.id});
+                        } else {
+                          _liked.add(widget.id);
+                          runMutation(
+                              {'email': widget.email, 'recipeId': widget.id});
+                        }
+                      },
+                    );
+                  },
+                );
+              },
+            )
           ],
         ),
         body: TabBarView(

@@ -15,7 +15,7 @@ export const resolvers = {
                 { $match: { imageFile: { $exists: true } } },
                 {
                     $project: {
-                        _id: 1,
+                        id: "$_id",
                         name: 1,
                         description: 1,
                         imageFile: 1,
@@ -38,10 +38,12 @@ export const resolvers = {
         getUserInfo: async (_, { name, email }) => {
             return await User.find({ name, email });
         },
-        getSearchedRecipes: async (_, { search, limit, skip }) => {
+        getSearchedRecipes: async (_, { search, limit, skip, email}) => {
             const recipes = await Recipe.find({ name: { $regex: search, $options: "i" } }).limit(limit).skip(skip);
-            const count = await Recipe.count({ name: { $regex: search, $options: "i" } });
-            return { recipes, count };
+            const user = await User.find({ email });
+            const favourites = user[0]['favourites'];
+            console.log(favourites);
+            return { recipes, favourites };
         },
         getFavouriteRecipes: async (_, { email, limit, skip }) => {
             const user = await User.find({ email });
@@ -64,6 +66,15 @@ export const resolvers = {
                                     $expr: {$in: ["$_id", "$$favourite_ids"]}
                                 }
                             },
+                            {
+                                $project: {
+                                    id: "$_id",
+                                    name: 1,
+                                    description: 1,
+                                    imageFile: 1,
+                                    minutes: 1
+                                }
+                            },
                             { $skip: skip},
                             { $limit: limit },
                             
@@ -73,7 +84,7 @@ export const resolvers = {
                 },
                 {
                     $project: {
-                        _id: 1,
+                        id: "$_id",
                         favourites: 1,
                         favouriteRecipes: 1,
                     }
@@ -103,17 +114,17 @@ export const resolvers = {
             const updatedUser = await User.find({ email });
             return updatedUser[0];
         },
-        removeItem: async (_, { _id, item }) => {
-            const user = await User.find({ _id });
+        removeItem: async (_, { id, item }) => {
+            const user = await User.find({ id });
             if (!user) {
                 throw new Error("User doesn't exist");
             }
-            await User.update({ _id }, { $pull: { currentItems: item } });
-            const updatedUser = await User.find({ _id });
+            await User.update({ id }, { $pull: { currentItems: item } });
+            const updatedUser = await User.find({ id });
             return updatedUser[0];
         },
         addFavourite: async (_, { email, recipeId }) => {
-            const recipe = await Recipe.find({ _id: recipeId });
+            const recipe = await Recipe.find({ id: recipeId });
             if (!recipe) {
                 throw new Error("Recipe doesn't exist");
             }
@@ -126,7 +137,7 @@ export const resolvers = {
             return updatedUser[0];
         },
         removeFavourite: async (_, { email, recipeId }) => {
-            const recipe = await Recipe.find({ _id: recipeId });
+            const recipe = await Recipe.find({ id: recipeId });
             if (!recipe) {
                 throw new Error("Recipe doesn't exist");
             }

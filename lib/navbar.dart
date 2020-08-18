@@ -21,17 +21,18 @@ class _NavBarState extends State<NavBar> {
   void onTappedBar(int index) {
     if (index == 3) {
       signOutGoogle();
+    } else {
+      setState(() {
+        _currentIndex = index;
+      });
     }
-    setState(() {
-      _currentIndex = index;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> _children = [
       ItemsPage(email: widget.email, name: widget.name),
-      SearchPage(),
+      SearchPage(email: widget.email, name: widget.name),
       FavouritesPage(email: widget.email),
       LoginPage(),
     ];
@@ -56,7 +57,6 @@ class _NavBarState extends State<NavBar> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.exit_to_app),
-            backgroundColor: Colors.red,
             title: Text('Logout'),
           ),
         ],

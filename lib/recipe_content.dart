@@ -5,13 +5,8 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:recipe_app/api.dart';
 
 class RecipeContent extends StatefulWidget {
-  const RecipeContent(
-      {Key key,
-      @required this.recipe,
-      @required this.favourites,
-      @required this.email})
-      : assert(recipe != null),
-        super(key: key);
+  const RecipeContent({Key key, this.recipe, this.favourites, this.email})
+      : super(key: key);
   final dynamic recipe;
   final List<dynamic> favourites;
   final String email;
@@ -33,8 +28,9 @@ class _RecipeContentState extends State<RecipeContent> {
 
   @override
   Widget build(BuildContext context) {
+    final String id = widget.recipe['id'];
     final List<dynamic> _liked = widget.favourites;
-    final alreadyLiked = _liked.contains(widget.recipe["_id"]);
+    final alreadyLiked = _liked.contains(id);
     final ThemeData theme = Theme.of(context);
     final TextStyle titleStyle =
         theme.textTheme.headline5.copyWith(color: Colors.white);
@@ -43,7 +39,10 @@ class _RecipeContentState extends State<RecipeContent> {
     name = name.replaceAll(" S ", "'s ");
     final String description =
         getCleanedDescription(widget.recipe['description']);
-    final String imageFile = 'assets/' + widget.recipe['imageFile'];
+    final String imageFile = widget.recipe['imageFile'] != null
+        ? 'assets/' + widget.recipe['imageFile']
+        : 'assets/placeholder.png';
+
     return Mutation(
       options: MutationOptions(
         documentNode: alreadyLiked ? gql(removeFavourite) : gql(addFavourite),
@@ -111,36 +110,17 @@ class _RecipeContentState extends State<RecipeContent> {
                       : Icon(Icons.favorite_border),
                   color: Colors.blue,
                   onPressed: () {
-                    setState(() {
-                      if (alreadyLiked) {
-                        print('hello');
-                        _liked.remove(widget.recipe["_id"]);
-                        final snackBar = SnackBar(
-                          content: Text(
-                            'Removed from Favourites',
-                            textAlign: TextAlign.center,
-                          ),
-                        );
-                        Scaffold.of(context).showSnackBar(snackBar);
-                        runMutation({
-                          'email': widget.email,
-                          'recipeId': widget.recipe["_id"]
-                        });
-                      } else {
-                        _liked.add(widget.recipe["_id"]);
-                        final snackBar = SnackBar(
-                          content: Text(
-                            'Added to Favourites',
-                            textAlign: TextAlign.center,
-                          ),
-                        );
-                        Scaffold.of(context).showSnackBar(snackBar);
-                        runMutation({
-                          'email': widget.email,
-                          'recipeId': widget.recipe["_id"]
-                        });
-                      }
-                    });
+                    setState(
+                      () {
+                        if (alreadyLiked) {
+                          _liked.remove(id);
+                          runMutation({'email': widget.email, 'recipeId': id});
+                        } else {
+                          _liked.add(id);
+                          runMutation({'email': widget.email, 'recipeId': id});
+                        }
+                      },
+                    );
                   },
                 ),
                 IconButton(
@@ -150,12 +130,16 @@ class _RecipeContentState extends State<RecipeContent> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => Recipe(
-                              id: widget.recipe['_id'],
-                              name: name,
-                              description: description,
-                              imageFile: imageFile,
-                              minutes: widget.recipe['minutes'])),
+                        builder: (context) => Recipe(
+                          id: widget.recipe['id'],
+                          name: name,
+                          description: description,
+                          imageFile: imageFile,
+                          minutes: widget.recipe['minutes'],
+                          favourites: widget.favourites,
+                          email: widget.email,
+                        ),
+                      ),
                     );
                   },
                 ),

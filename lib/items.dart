@@ -30,7 +30,6 @@ class _ItemsPageState extends State<ItemsPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.email);
     return Query(
       options: QueryOptions(
         documentNode: gql(getCurrentUserInfo),
@@ -56,7 +55,7 @@ class _ItemsPageState extends State<ItemsPage> {
                       : RenderItems(
                           key: _key,
                           data: result.data['getUserInfo'][0]['currentItems'],
-                          id: result.data['getUserInfo'][0]['_id'])),
+                          id: result.data['getUserInfo'][0]['id'])),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               Navigator.push(
@@ -161,7 +160,7 @@ class _RenderItemsState extends State<RenderItems> {
                 icon: Icon(Icons.delete),
                 color: Colors.red,
                 onPressed: () {
-                  runMutation({'_id': widget.id, 'item': item});
+                  runMutation({'id': widget.id, 'item': item});
                   _removeSingleItems(index);
                 },
               ),
