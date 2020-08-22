@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:recipe_app/api.dart';
+import 'package:recipe_app/image_item.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Recipe extends StatefulWidget {
@@ -121,10 +122,8 @@ class _HomeTabState extends State<HomeTab> {
           child: Stack(
             children: <Widget>[
               Positioned.fill(
-                child: Ink.image(
-                  image: AssetImage(widget.imageFile),
-                  fit: BoxFit.cover,
-                  child: Container(),
+                child: ImageItem(
+                  imageFile: widget.imageFile,
                 ),
               ),
             ],

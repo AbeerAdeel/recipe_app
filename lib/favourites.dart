@@ -1,8 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:recipe_app/api.dart';
-import 'package:recipe_app/sign_in.dart';
 import 'package:recipe_app/recipe_content.dart';
 
 class FavouritesPage extends StatefulWidget {
@@ -26,7 +24,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             Query(
@@ -52,9 +50,6 @@ class _FavouritesPageState extends State<FavouritesPage> {
                 final repositories = (result.data['getFavouriteRecipes'][0]
                     ['favouriteRecipes'] as List<dynamic>);
 
-                final List<dynamic> favourites =
-                    result.data['getFavouriteRecipes'][0]['favourites'];
-
                 final opts = FetchMoreOptions(
                   variables: {'skip': skip},
                   updateQuery: (previousResultData, fetchMoreResultData) {
@@ -72,6 +67,12 @@ class _FavouritesPageState extends State<FavouritesPage> {
 
                 if (result.loading) {
                   skip = skip + 5;
+                }
+
+                if (repositories.length == 0) {
+                  return Center(
+                    child: Text('No current favourite recipes'),
+                  );
                 }
 
                 return Expanded(
@@ -93,7 +94,6 @@ class _FavouritesPageState extends State<FavouritesPage> {
                                     shape: shape,
                                     child: RecipeContent(
                                       recipe: recipe,
-                                      favourites: favourites,
                                       email: widget.email,
                                     ),
                                   ),

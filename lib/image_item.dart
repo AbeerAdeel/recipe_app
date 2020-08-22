@@ -34,7 +34,7 @@ class _ImageItemState extends State<ImageItem> {
 
   Widget imageWidget() {
     if (imageFile == null) {
-      return Center(child: Text("No image"));
+      return Center(child: CircularProgressIndicator());
     } else {
       return Image.memory(imageFile, fit: BoxFit.cover);
     }

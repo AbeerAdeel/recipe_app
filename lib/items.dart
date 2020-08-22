@@ -1,8 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:recipe_app/api.dart';
-import 'package:recipe_app/sign_in.dart';
 import 'package:recipe_app/top_recipes.dart';
 
 class ItemsPage extends StatefulWidget {
@@ -61,10 +59,10 @@ class _ItemsPageState extends State<ItemsPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => TopRecipes(
-                        email: widget.email,
-                        favourites: result.data['getUserInfo'][0]
-                            ['favourites'])),
+                  builder: (context) => TopRecipes(
+                    email: widget.email,
+                  ),
+                ),
               );
             },
             child: Icon(Icons.local_dining),
@@ -103,7 +101,7 @@ class _ItemsPageState extends State<ItemsPage> {
                     onPressed: () {
                       runMutation({
                         'email': email,
-                        'item': _textFieldController.text,
+                        'item': _textFieldController.text.toLowerCase(),
                       });
                       _key.currentState
                           ._insertSingleItem(_textFieldController.text);
@@ -129,14 +127,23 @@ class RenderItems extends StatefulWidget {
 
 class _RenderItemsState extends State<RenderItems> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
+  List<dynamic> _currentChangedList = [];
+
+  @override
+  void initState() {
+    _currentChangedList = widget.data;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedList(
-        key: _listKey,
-        initialItemCount: widget.data.length,
-        itemBuilder: (context, index, animation) {
-          return _buildItem(widget.data[index], animation, index);
-        });
+      key: _listKey,
+      initialItemCount: _currentChangedList.length,
+      itemBuilder: (context, index, animation) {
+        return _buildItem(_currentChangedList[index], animation, index);
+      },
+    );
   }
 
   Widget _buildItem(String item, Animation animation, int index) {
@@ -153,14 +160,14 @@ class _RenderItemsState extends State<RenderItems> {
           child: Card(
             child: ListTile(
               title: Text(
-                item,
+                item.toLowerCase(),
                 style: TextStyle(fontSize: 20),
               ),
               trailing: IconButton(
                 icon: Icon(Icons.delete),
                 color: Colors.red,
                 onPressed: () {
-                  runMutation({'id': widget.id, 'item': item});
+                  runMutation({'id': widget.id, 'item': item.toLowerCase()});
                   _removeSingleItems(index);
                 },
               ),
@@ -172,16 +179,23 @@ class _RenderItemsState extends State<RenderItems> {
   }
 
   void _insertSingleItem(item) {
-    int insertIndex = widget.data.length;
-    widget.data.insert(insertIndex, item);
+    int insertIndex = _currentChangedList.length;
+    setState(() {
+      _currentChangedList.insert(insertIndex, item);
+    });
+
     _listKey.currentState.insertItem(insertIndex);
   }
 
   void _removeSingleItems(removeIndex) {
-    String removedItem = widget.data.removeAt(removeIndex);
+    String removedItem = _currentChangedList.removeAt(removeIndex);
     AnimatedListRemovedItemBuilder builder = (context, animation) {
       return _buildItem(removedItem, animation, removeIndex);
     };
+    setState(() {
+      _currentChangedList.remove(removedItem);
+    });
+    print(_currentChangedList);
     _listKey.currentState.removeItem(removeIndex, builder);
   }
 }

@@ -38,11 +38,9 @@ export const resolvers = {
         getUserInfo: async (_, { name, email }) => {
             return await User.find({ name, email });
         },
-        getSearchedRecipes: async (_, { search, limit, skip, email}) => {
+        getSearchedRecipes: async (_, { search, limit, skip}) => {
             const recipes = await Recipe.find({ name: { $regex: search, $options: "i" } }).limit(limit).skip(skip);
-            const user = await User.find({ email });
-            const favourites = user[0]['favourites'];
-            return { recipes, favourites };
+            return recipes;
         },
         getFavouriteRecipes: async (_, { email, limit, skip }) => {
             const user = await User.find({ email });
@@ -114,12 +112,12 @@ export const resolvers = {
             return updatedUser[0];
         },
         removeItem: async (_, { id, item }) => {
-            const user = await User.find({ id });
+            const user = await User.find({ _id: id });
             if (!user) {
                 throw new Error("User doesn't exist");
             }
-            await User.update({ id }, { $pull: { currentItems: item } });
-            const updatedUser = await User.find({ id });
+            await User.update({ _id: id }, { $pull: { currentItems: item } });
+            const updatedUser = await User.find({ _id: id });
             return updatedUser[0];
         },
         addFavourite: async (_, { email, recipeId }) => {

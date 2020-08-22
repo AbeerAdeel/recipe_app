@@ -132,16 +132,13 @@ final String getRecipeInfo = """
 """;
 
 final String getSearchedRecipes = """
-  query GetSearchedRecipes(\$search: String!, \$limit: Int!, \$skip: Int!, \$email: String!) {
-      getSearchedRecipes(search: \$search, limit: \$limit, skip: \$skip, email: \$email) {
-        recipes {
+  query GetSearchedRecipes(\$search: String!, \$limit: Int!, \$skip: Int!) {
+      getSearchedRecipes(search: \$search, limit: \$limit, skip: \$skip) {
           id
           name
           description
           imageFile
           minutes
-        }
-        favourites
       }
     }
 """;

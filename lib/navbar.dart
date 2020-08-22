@@ -21,11 +21,10 @@ class _NavBarState extends State<NavBar> {
   void onTappedBar(int index) {
     if (index == 3) {
       signOutGoogle();
-    } else {
-      setState(() {
-        _currentIndex = index;
-      });
     }
+    setState(() {
+      _currentIndex = index;
+    });
   }
 
   @override
@@ -38,29 +37,31 @@ class _NavBarState extends State<NavBar> {
     ];
     return Scaffold(
       body: _children[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        type: BottomNavigationBarType.fixed,
-        onTap: onTappedBar,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.kitchen),
-            title: Text('Items'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            title: Text('Search'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            title: Text('Favourites'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.exit_to_app),
-            title: Text('Logout'),
-          ),
-        ],
-      ),
+      bottomNavigationBar: _currentIndex != 3
+          ? BottomNavigationBar(
+              currentIndex: _currentIndex,
+              type: BottomNavigationBarType.fixed,
+              onTap: onTappedBar,
+              items: [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.kitchen),
+                  title: Text('Items'),
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.search),
+                  title: Text('Search'),
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.star),
+                  title: Text('Favourites'),
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.exit_to_app),
+                  title: Text('Logout'),
+                ),
+              ],
+            )
+          : LoginPage(),
     );
   }
 }

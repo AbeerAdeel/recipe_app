@@ -5,8 +5,7 @@ import 'package:recipe_app/recipe_content.dart';
 
 class TopRecipes extends StatefulWidget {
   final String email;
-  final List<dynamic> favourites;
-  const TopRecipes({Key key, this.email, this.favourites}) : super(key: key);
+  const TopRecipes({Key key, this.email}) : super(key: key);
   @override
   _TopRecipesState createState() => _TopRecipesState();
 }
@@ -26,7 +25,7 @@ class _TopRecipesState extends State<TopRecipes> {
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             Query(
@@ -72,6 +71,12 @@ class _TopRecipesState extends State<TopRecipes> {
                 if (result.loading) {
                   skip = skip + 5;
                 }
+
+                if (repositories.length == 0) {
+                  return Center(
+                    child: Text("Couldn't generate reccomended recipes"),
+                  );
+                }
                 return Expanded(
                   child: ListView(
                     children: <Widget>[
@@ -91,7 +96,6 @@ class _TopRecipesState extends State<TopRecipes> {
                                     shape: shape,
                                     child: RecipeContent(
                                       recipe: recipe,
-                                      favourites: widget.favourites,
                                       email: widget.email,
                                     ),
                                   ),

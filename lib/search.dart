@@ -24,140 +24,153 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   TextEditingController _controller;
   ShapeBorder shape;
-  bool _isSearching = false;
   String text = "";
 
+  @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
   }
 
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
 
-  int _limit = 5;
   int skip = 5;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Search'),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: TextFormField(
-              controller: _controller,
-              decoration: InputDecoration(
-                labelText: 'Search for recipe',
-                border: OutlineInputBorder(),
-                suffixIcon: Icon(Icons.search),
+        appBar: AppBar(
+          title: Text('Search'),
+        ),
+        body: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: _controller,
+                  decoration: InputDecoration(
+                    labelText: 'Search for recipe',
+                    border: OutlineInputBorder(),
+                    suffixIcon: Icon(Icons.search),
+                  ),
+                  onChanged: (String value) {
+                    print('hello');
+                    if (this.mounted) {
+                      this.setState(() {
+                        text = value;
+                      });
+                    }
+                  },
+                ),
               ),
-              onChanged: (String value) {
-                setState(() {
-                  text = value;
-                });
-              },
-            ),
-          ),
-          Query(
-            options: QueryOptions(
-              documentNode: gql(getSearchedRecipes),
-              variables: {
-                'search': text,
-                'skip': 0,
-                'limit': 5,
-                'email': widget.email
-              },
-            ),
-            builder: (QueryResult result, {refetch, FetchMore fetchMore}) {
-              if (result.hasException) {
-                return Text(result.exception.toString());
-              }
+              Query(
+                options: QueryOptions(
+                  documentNode: gql(getSearchedRecipes),
+                  variables: {
+                    'search': text,
+                    'skip': 0,
+                    'limit': 5,
+                  },
+                ),
+                builder: (QueryResult result, {refetch, FetchMore fetchMore}) {
+                  if (result.hasException) {
+                    return Text(result.exception.toString());
+                  }
 
-              if (result.loading && result.data == null) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
+                  if (result.loading && result.data == null) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
 
-              final repositories = (result.data['getSearchedRecipes']['recipes']
-                  as List<dynamic>);
+                  if (result.loading) {
+                    skip = skip + 5;
+                  }
 
-              final favourites =
-                  result.data['getSearchedRecipes']['favourites'];
+                  final repositories =
+                      (result.data['getSearchedRecipes'] as List<dynamic>);
 
-              final opts = FetchMoreOptions(
-                variables: {'skip': skip},
-                updateQuery: (previousResultData, fetchMoreResultData) {
-                  final repos = [
-                    ...previousResultData['getSearchedRecipes']['recipes'],
-                    ...fetchMoreResultData['getSearchedRecipes']['recipes']
-                  ];
-                  fetchMoreResultData['getSearchedRecipes']['recipes'] = repos;
-                  return fetchMoreResultData;
-                },
-              );
+                  // final favourites =
+                  //     result.data['getSearchedRecipes']['favourites'];
 
-              return Expanded(
-                child: ListView(
-                  children: <Widget>[
-                    for (var recipe in repositories)
-                      SafeArea(
-                        top: false,
-                        bottom: false,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: <Widget>[
-                              SizedBox(
-                                height: 320.0,
-                                child: Card(
-                                  // This ensures that the Card's children are clipped correctly.
-                                  clipBehavior: Clip.antiAlias,
-                                  shape: shape,
-                                  child: RecipeContent(
-                                    recipe: recipe,
-                                    favourites: favourites,
-                                    email: 'adeelabeer@gmail.com',
+                  final opts = FetchMoreOptions(
+                    variables: {'skip': skip},
+                    updateQuery: (previousResultData, fetchMoreResultData) {
+                      final repos = [
+                        ...previousResultData['getSearchedRecipes'],
+                        ...fetchMoreResultData['getSearchedRecipes']
+                      ];
+                      fetchMoreResultData['getSearchedRecipes'] = repos;
+                      return fetchMoreResultData;
+                    },
+                  );
+
+                  if (repositories.length == 0) {
+                    return Center(
+                      child: Text("Could not get any search results"),
+                    );
+                  }
+
+                  return Expanded(
+                    child: ListView(
+                      children: <Widget>[
+                        for (var recipe in repositories)
+                          SafeArea(
+                            top: false,
+                            bottom: false,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: 320.0,
+                                    child: Card(
+                                      // This ensures that the Card's children are clipped correctly.
+                                      clipBehavior: Clip.antiAlias,
+                                      shape: shape,
+                                      child: RecipeContent(
+                                        recipe: recipe,
+                                        email: widget.email,
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
+                            ),
+                          ),
+                        if (result.loading)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              CircularProgressIndicator(),
                             ],
                           ),
-                        ),
-                      ),
-                    if (result.loading)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          CircularProgressIndicator(),
-                        ],
-                      ),
-                    RaisedButton(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text('Load More'),
-                        ],
-                      ),
-                      onPressed: () {
-                        skip = skip + 5;
-                        fetchMore(opts);
-                      },
-                    )
-                  ],
-                ),
-              );
-            },
+                        RaisedButton(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text('Load More'),
+                            ],
+                          ),
+                          onPressed: () {
+                            // skip = skip + 5;
+                            fetchMore(opts);
+                          },
+                        )
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ));
   }
 }

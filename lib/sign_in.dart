@@ -26,12 +26,15 @@ Future<String> signInWithGoogle() async {
 }
 
 Future<FirebaseUser> getCurrentUser() async {
+  final isSignedIn = await _googleSignIn.isSignedIn();
   final FirebaseUser currentUser = await _auth.currentUser();
+  if (isSignedIn == false) {
+    return null;
+  }
   return currentUser;
 }
 
 void signOutGoogle() async {
   await _googleSignIn.signOut();
-
   print("User Sign Out");
 }
