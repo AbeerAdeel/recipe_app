@@ -19,24 +19,15 @@ class MyApp extends StatelessWidget {
         title: 'Recipes',
         home: SplashScreen(
             seconds: 2,
-            title: new Text(
-              'Recipe Generator',
-              style: new TextStyle(
-                color: Colors.blue,
-                fontSize: 20.0,
-              ),
-            ),
-            // the widget to run after running your splashscreen for 1 sec
             navigateAfterSeconds:
                 MaterialApp(title: 'Recipes', home: AfterSplash()),
             image: Image(
               image: AssetImage('assets/splash.png'),
               alignment: Alignment.center,
             ),
-            styleTextUnderTheLoader: new TextStyle(),
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.blue,
             photoSize: 100,
-            loaderColor: Colors.white),
+            loaderColor: Colors.blue),
       ),
       client: graphQLConfiguration.client,
     );
