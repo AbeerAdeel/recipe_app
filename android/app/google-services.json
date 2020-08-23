@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:894524213549:android:58fe83b196bf448c976ba4",
+        "mobilesdk_app_id": "1:894524213549:android:32d573980e47efea976ba4",
         "android_client_info": {
-          "package_name": "com.example.recipe_app"
+          "package_name": "com.aadeel.recipe_app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "894524213549-tpsqpppoo81orns167i73bt42n1qd4cu.apps.googleusercontent.com",
+          "client_id": "894524213549-pl9seni2enhaqqp51a5esj894tua745k.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.recipe_app",
+            "package_name": "com.aadeel.recipe_app",
             "certificate_hash": "8c660f4ddb5147b23d14c65d45c7bcaa4e036b94"
           }
         },
