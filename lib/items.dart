@@ -4,9 +4,8 @@ import 'package:recipe_app/api.dart';
 import 'package:recipe_app/top_recipes.dart';
 
 class ItemsPage extends StatefulWidget {
-  ItemsPage({Key key, this.email, this.name}) : super(key: key);
+  ItemsPage({Key key, this.email}) : super(key: key);
   final String email;
-  final String name;
   @override
   _ItemsPageState createState() => _ItemsPageState();
 }
@@ -14,14 +13,8 @@ class ItemsPage extends StatefulWidget {
 class _ItemsPageState extends State<ItemsPage> {
   final _textFieldController = TextEditingController();
   final GlobalKey<_RenderItemsState> _key = GlobalKey();
-  // Future<FirebaseUser> _calculation = Future<FirebaseUser>.delayed(
-  //   Duration(seconds: 1),
-  //   () => getCurrentUser(),
-  // );
 
   void dispose() {
-    // Clean up the controller when the widget is removed from the
-    // widget tree.
     _textFieldController.dispose();
     super.dispose();
   }
@@ -31,7 +24,7 @@ class _ItemsPageState extends State<ItemsPage> {
     return Query(
       options: QueryOptions(
         documentNode: gql(getCurrentUserInfo),
-        variables: {'name': widget.name, 'email': widget.email},
+        variables: {'email': widget.email},
       ),
       builder: (QueryResult result,
           {VoidCallback refetch, FetchMore fetchMore}) {

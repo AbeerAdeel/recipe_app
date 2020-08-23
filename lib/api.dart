@@ -27,8 +27,8 @@ final String getFavouriteRecipes = """
 """;
 
 final String getCurrentUserInfo = """
-  query CurrentItems(\$name: String!, \$email: String!) {
-      getUserInfo(name: \$name, email: \$email) {
+  query CurrentItems(\$email: String!) {
+      getUserInfo(email: \$email) {
         id
         name
         email

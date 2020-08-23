@@ -30,8 +30,8 @@ class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> _children = [
-      ItemsPage(email: widget.email, name: widget.name),
-      SearchPage(email: widget.email, name: widget.name),
+      ItemsPage(email: widget.email),
+      SearchPage(email: widget.email),
       FavouritesPage(email: widget.email),
       LoginPage(),
     ];

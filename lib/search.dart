@@ -14,9 +14,8 @@ class Recipe {
 }
 
 class SearchPage extends StatefulWidget {
-  SearchPage({Key key, this.email, this.name}) : super(key: key);
+  SearchPage({Key key, this.email}) : super(key: key);
   final String email;
-  final String name;
   @override
   _SearchPageState createState() => _SearchPageState();
 }

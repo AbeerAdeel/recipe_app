@@ -35,7 +35,7 @@ class _RecipeContentState extends State<RecipeContent> {
     QueryResult result = await _client.query(
       QueryOptions(
         documentNode: gql(getCurrentUserInfo),
-        variables: {'name': 'Abeer Adeel', 'email': widget.email},
+        variables: {'email': widget.email},
       ),
     );
     sleep(Duration(microseconds: 10));

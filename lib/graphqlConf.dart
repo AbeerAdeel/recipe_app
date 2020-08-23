@@ -3,7 +3,7 @@ import "package:graphql_flutter/graphql_flutter.dart";
 
 class GraphQLConfiguration {
   static HttpLink httpLink = HttpLink(
-    uri: "http://192.168.2.133:5000/graphql",
+    uri: "https://tranquil-reef-02224.herokuapp.com/graphql",
   );
 
   ValueNotifier<GraphQLClient> client = ValueNotifier(
