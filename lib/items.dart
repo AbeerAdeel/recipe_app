@@ -195,7 +195,6 @@ class _RenderItemsState extends State<RenderItems> {
     setState(() {
       _currentChangedList.remove(removedItem);
     });
-    print(_currentChangedList);
     _listKey.currentState.removeItem(removeIndex, builder);
   }
 }

@@ -61,7 +61,6 @@ class _SearchPageState extends State<SearchPage> {
                     suffixIcon: Icon(Icons.search),
                   ),
                   onChanged: (String value) {
-                    print('hello');
                     if (this.mounted) {
                       this.setState(() {
                         text = value;
