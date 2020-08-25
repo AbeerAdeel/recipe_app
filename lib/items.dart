@@ -150,11 +150,10 @@ class _ItemsPageState extends State<ItemsPage> {
         RunMutation runMutation,
         QueryResult result,
       ) {
-        return Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: SizeTransition(
-            sizeFactor: animation,
-            axis: Axis.vertical,
+        return SizeTransition(
+          sizeFactor: animation,
+          axis: Axis.vertical,
+          child: Card(
             child: ListTile(
               title: Text(item.toLowerCase(), style: textStyle),
               trailing: IconButton(
