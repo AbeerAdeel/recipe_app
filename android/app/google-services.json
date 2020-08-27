@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "894524213549-jq0sik6qd6gtu75bqqfmn32m0hlf6mfs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aadeel.recipe_app",
+            "certificate_hash": "b2fd7bb58162f586bff004d23abc6842a7d9a164"
+          }
+        },
+        {
           "client_id": "894524213549-pl9seni2enhaqqp51a5esj894tua745k.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
