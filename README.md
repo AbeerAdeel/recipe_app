@@ -16,9 +16,9 @@ yarn start
 ```
 
 ## Screenshots
-![](screenshots/items.png)
-![](screenshots/top_recipes.png)
-![](screenshots/recipes.png)
+![](screenshots/items.png =100x20)
+![](screenshots/top_recipes.png =100x20)
+![](screenshots/recipes.png =100x20)
 
 
 ## Tech Stack
