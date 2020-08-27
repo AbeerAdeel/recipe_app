@@ -18,6 +18,7 @@ class _ItemsPageState extends State<ItemsPage> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<dynamic> _items = [];
   String _id;
+  AnimationController emptyListController;
 
   void fillList() async {
     GraphQLClient _client = graphQLConfiguration.clientToQuery();
@@ -85,12 +86,16 @@ class _ItemsPageState extends State<ItemsPage> {
       body: Center(
         child: _id == null
             ? CircularProgressIndicator()
-            : AnimatedList(
-                key: _listKey,
-                initialItemCount: _items.length,
-                itemBuilder: (context, index, animation) =>
-                    _buildItem(context, _items[index], animation, index, _id),
-              ),
+            : _items.length == 0
+                ? Text('No current items in your fridge or pantree')
+                : AnimatedList(
+                    key: _listKey,
+                    initialItemCount: _items.length,
+                    itemBuilder: (context, index, animation) {
+                      return _buildItem(
+                          context, _items[index], animation, index, _id);
+                    },
+                  ),
       ),
     );
   }
@@ -127,6 +132,7 @@ class _ItemsPageState extends State<ItemsPage> {
                       'item': _textFieldController.text.toLowerCase(),
                     });
                     _insertSingleItem(_textFieldController.text.toLowerCase());
+                    _textFieldController.clear();
                     Navigator.of(context).pop();
                   },
                 )
@@ -175,7 +181,9 @@ class _ItemsPageState extends State<ItemsPage> {
     setState(() {
       _items.insert(0, item);
     });
-    _listKey.currentState.insertItem(0);
+    if (_listKey.currentState != null) {
+      _listKey.currentState.insertItem(0);
+    }
   }
 
   void _removeItem(index, id) {
