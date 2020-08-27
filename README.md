@@ -16,9 +16,10 @@ yarn start
 ```
 
 ## Screenshots
-![](screenshots/items.png =100x20)
-![](screenshots/top_recipes.png =100x20)
-![](screenshots/recipes.png =100x20)
+<img src="screenshots/items.png" alt="drawing" width="200"/> &nbsp;
+<img src="screenshots/top_recipes.png" alt="drawing" width="200"/> &nbsp;
+<img src="screenshots/recipes.png" alt="drawing" width="200" /> &nbsp;
+
 
 
 ## Tech Stack
